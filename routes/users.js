@@ -1,5 +1,9 @@
 "use strict";
 
+const res = require("express/lib/response");
+const { append } = require("express/lib/response");
+const bcrypt = require("bcrypt");
+
 const Router = require("express").Router;
 const router = new Router();
 
@@ -9,6 +13,10 @@ const router = new Router();
  * => {users: [{username, first_name, last_name}, ...]}
  *
  **/
+
+router.get("/", function (req, res, next){
+  return res.send("test")
+})
 
 
 /** GET /:username - get detail of users.

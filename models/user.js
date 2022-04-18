@@ -2,12 +2,11 @@
 
 /** User of the site. */
 
-const { NotFoundError, UnauthorizedError} = require("../expressError");
+const { NotFoundError, UnauthorizedError } = require("../expressError");
 const db = require("../db");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const res = require("express/lib/response");
-const SECRET_KEY = "oh-so-secret";
 
 class User {
 
@@ -16,9 +15,7 @@ class User {
    */
 
   static async register({ username, password, first_name, last_name, phone }) {
-
-    const hashedPassword = await bcrypt.hash(
-      password, 12);
+    const hashedPassword = await bcrypt.hash(password, 12);
 
     const result = await db.query(
       `INSERT INTO users (username,
@@ -26,10 +23,12 @@ class User {
                              first_name,
                              last_name,
                              phone,
-                             join_at)
+                             join_at,
+                             last_login_at)
          VALUES
-           ($1, $2, $3, $4, $5, current_timestamp)
-         RETURNING username, password, first_name, last_name, phone, join_at`,
+           ($1, $2, $3, $4, $5, current_timestamp, current_timestamp)
+         RETURNING username, password, first_name, last_name, phone,
+           join_at, last_login_at`,
       [username, hashedPassword, first_name, last_name, phone]);
 
     return result.rows[0];
@@ -48,12 +47,10 @@ class User {
 
     if (user) {
       if (await bcrypt.compare(password, user.password) === true) {
-        // const token = jwt.sign({ username }, SECRET_KEY);
         return user;
       }
     }
     return false;
-    // throw new UnauthorizedError("Invalid user/password");
 
   }
 
@@ -80,10 +77,10 @@ class User {
   static async all() {
 
     const result = await db.query(
-        `SELECT 
+      `SELECT
             username,
             first_name,
-            last_name,
+            last_name
         FROM users`);
     const users = result.rows;
     return users;
@@ -101,7 +98,7 @@ class User {
   static async get(username) {
 
     const result = await db.query(
-          `SELECT 
+      `SELECT
               username,
               first_name,
               last_name,
@@ -110,7 +107,7 @@ class User {
               last_login_at
           FROM users
           WHERE username = $1`,
-          [username])
+      [username]);
 
     const user = result.rows[0];
 
@@ -134,22 +131,26 @@ class User {
       `SELECT id,body,sent_at,read_at,to_username,first_name,last_name,phone
         FROM users
         JOIN messages
-        ON from_username = username
+        ON to_username = username
         WHERE from_username = $1`,
-        [username]
+      [username]
     );
     const messages = results.rows;
 
     const messages_formatted = messages.map(message => {
-      return {id:message.id, 
-              to_user:{username: message.to_username, 
-                      first_name: message.first_name, 
-                      last_name: message.last_name, 
-                      phone: message.phone},
-              body: message.body, 
-              sent_at: message.sent_at, 
-              read_at: message.read_at}
-                            
+      return {
+        id: message.id,
+        to_user: {
+          username: message.to_username,
+          first_name: message.first_name,
+          last_name: message.last_name,
+          phone: message.phone
+        },
+        body: message.body,
+        sent_at: message.sent_at,
+        read_at: message.read_at
+      };
+
     });
 
     return messages_formatted;
@@ -169,22 +170,26 @@ class User {
       `SELECT id,body,sent_at,read_at,from_username,first_name,last_name,phone
         FROM users
         JOIN messages
-        ON to_username = username
+        ON from_username = username
         WHERE to_username = $1`,
-        [username]
+      [username]
     );
     const messages = results.rows;
 
     const messages_formatted = messages.map(message => {
-      return {id:message.id, 
-              from_user:{username: message.from_username, 
-                      first_name: message.first_name, 
-                      last_name: message.last_name, 
-                      phone: message.phone},
-              body: message.body, 
-              sent_at: message.sent_at, 
-              read_at: message.read_at}
-                            
+      return {
+        id: message.id,
+        from_user: {
+          username: message.from_username,
+          first_name: message.first_name,
+          last_name: message.last_name,
+          phone: message.phone
+        },
+        body: message.body,
+        sent_at: message.sent_at,
+        read_at: message.read_at
+      };
+
     });
 
     return messages_formatted;

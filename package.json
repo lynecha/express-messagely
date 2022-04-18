@@ -13,7 +13,7 @@
     "bcrypt": "^5.0.1",
     "body-parser": "*",
     "cors": "^2.8.5",
-    "dotenv": "*",
+    "dotenv": "^16.0.0",
     "express": "^5.0.0-beta.1",
     "express-cors": "*",
     "jest": "^27.5.1",
