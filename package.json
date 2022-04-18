@@ -12,10 +12,11 @@
     "axios": "^0.26.1",
     "bcrypt": "^5.0.1",
     "body-parser": "*",
-    "cors": "*",
+    "cors": "^2.8.5",
     "dotenv": "*",
-    "express": "^5.0.0-alpha.8",
+    "express": "^5.0.0-beta.1",
     "express-cors": "*",
+    "jest": "^27.5.1",
     "jsonwebtoken": "^8.5.1",
     "pg": "*",
     "supertest": "*"
