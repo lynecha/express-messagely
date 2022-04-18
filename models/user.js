@@ -63,10 +63,10 @@ class User {
 
     const result = await db.query(
       `UPDATE users
-            SET last_login_at=$1
-            WHERE username = $2
+            SET last_login_at=current_timestamp
+            WHERE username = $1
             RETURNING username,last_login_at`,
-      [GetDate(),username]);
+      [username]);
     const user = result.rows[0];
 
     if (!user) throw new NotFoundError(`No such user: ${username}`);
