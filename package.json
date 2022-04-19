@@ -19,7 +19,7 @@
     "jest": "^27.5.1",
     "jsonwebtoken": "^8.5.1",
     "pg": "*",
-    "supertest": "*"
+    "supertest": "^6.2.2"
   },
   "keywords": [],
   "description": ""
