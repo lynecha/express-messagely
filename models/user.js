@@ -7,6 +7,7 @@ const db = require("../db");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const res = require("express/lib/response");
+const { BCRYPT_WORK_FACTOR }= require("../config.js")
 
 class User {
 
@@ -15,7 +16,7 @@ class User {
    */
 
   static async register({ username, password, first_name, last_name, phone }) {
-    const hashedPassword = await bcrypt.hash(password, 12);
+    const hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR);
 
     const result = await db.query(
       `INSERT INTO users (username,
@@ -128,7 +129,13 @@ class User {
   static async messagesFrom(username) {
 
     const results = await db.query(
-      `SELECT id,body,sent_at,read_at,to_username,first_name,last_name,phone
+      `SELECT id,
+              body,
+              sent_at,
+              read_at,
+              to_username,
+              first_name,
+              last_name,phone
         FROM users
         JOIN messages
         ON to_username = username

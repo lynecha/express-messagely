@@ -1,11 +1,10 @@
 "use strict";
 
 const res = require("express/lib/response");
-const { append } = require("express/lib/response");
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const Router = require("express").Router;
-const { authenticateJWT, ensureLoggedIn, ensureCorrectUser } = require("../middleware/auth");
+const { ensureLoggedIn, ensureCorrectUser } = require("../middleware/auth");
 const router = new Router();
 
 
@@ -15,10 +14,10 @@ const router = new Router();
  *
  **/
 
-router.get("/",ensureLoggedIn, async function (req, res, next){
+router.get("/", ensureLoggedIn, async function (req, res, next) {
   const users = await User.all();
-  return res.json({users});
-})
+  return res.json({ users });
+});
 
 
 /** GET /:username - get detail of users.
@@ -28,12 +27,11 @@ router.get("/",ensureLoggedIn, async function (req, res, next){
  **/
 
 
-router.get("/:username", ensureLoggedIn, ensureCorrectUser, async function(req,res,next) {
-  console.log("local user ", res.locals.user)
+router.get("/:username", ensureLoggedIn, ensureCorrectUser, async function (req, res, next) {
   const username = req.params.username;
   const user = await User.get(username);
-  return res.json({user});
-})
+  return res.json({ user });
+});
 
 
 /** GET /:username/to - get messages to user
@@ -46,12 +44,12 @@ router.get("/:username", ensureLoggedIn, ensureCorrectUser, async function(req,r
  *
  **/
 
-router.get("/:username/to", ensureLoggedIn, ensureCorrectUser, async function(req,res,next) {
+router.get("/:username/to", ensureLoggedIn, ensureCorrectUser, async function (req, res, next) {
   const username = req.params.username;
 
   const messagesTo = await User.messagesTo(username);
-  return res.json({messagesTo});
-})
+  return res.json({ messagesTo });
+});
 
 
 /** GET /:username/from - get messages from user
@@ -64,11 +62,11 @@ router.get("/:username/to", ensureLoggedIn, ensureCorrectUser, async function(re
  *
  **/
 
- router.get("/:username/from", ensureLoggedIn, ensureCorrectUser, async function(req,res,next) {
+router.get("/:username/from", ensureLoggedIn, ensureCorrectUser, async function (req, res, next) {
   const username = req.params.username;
 
   const messagesFrom = await User.messagesFrom(username);
-  return res.json({messagesFrom});
-})
+  return res.json({ messagesFrom });
+});
 
 module.exports = router;

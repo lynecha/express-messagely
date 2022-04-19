@@ -4,7 +4,7 @@ const { BadRequestError } = require("../expressError");
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { SECRET_KEY, BCRYPT_WORK_FACTOR } = require("../config.js")
+const { SECRET_KEY } = require("../config.js")
 
 const Router = require("express").Router;
 const router = new Router();
@@ -25,8 +25,6 @@ router.post("/login", async function (req, res, next) {
 
 router.post("/register", async function (req, res, next) {
   const newUser = await User.register(req.body);
-  res.locals.user = newUser;
-  console.log("reslocal ",res.locals);
 
   if (newUser) {
     const token = jwt.sign({ username: newUser.username }, SECRET_KEY);
@@ -37,12 +35,3 @@ router.post("/register", async function (req, res, next) {
 
 
 module.exports = router;
-
-
-
-
-
-
-    // // use that taken for future requests
-    // await axios.get("/secret", {params: {_token: token}});
-    // await axios.post("/other", {_token: token});

@@ -15,7 +15,6 @@ function authenticateJWT(req, res, next) {
     const tokenFromRequest = req.query._token || req.body._token;
     const payload = jwt.verify(tokenFromRequest, SECRET_KEY);
     res.locals.user = payload;
-    console.log("authenticateJMT  ", res.locals.user);
     return next();
   } catch (err) {
     // error in this middleware isn't error -- continue on
