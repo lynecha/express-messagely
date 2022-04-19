@@ -2,9 +2,10 @@
 
 const res = require("express/lib/response");
 const { append } = require("express/lib/response");
+const User = require("../models/user");
 const bcrypt = require("bcrypt");
-
 const Router = require("express").Router;
+const { authenticateJWT, ensureLoggedIn, ensureCorrectUser } = require("../middleware/auth");
 const router = new Router();
 
 
@@ -14,8 +15,9 @@ const router = new Router();
  *
  **/
 
-router.get("/", function (req, res, next){
-  return res.send("test")
+router.get("/",ensureLoggedIn, async function (req, res, next){
+  const users = await User.all();
+  return res.json({users});
 })
 
 
@@ -24,6 +26,14 @@ router.get("/", function (req, res, next){
  * => {user: {username, first_name, last_name, phone, join_at, last_login_at}}
  *
  **/
+
+
+router.get("/:username", ensureLoggedIn, async function(req,res,next) {
+  console.log("local user ", res.locals.user)
+  const username = req.params.username;
+  const user = await User.get(username);
+  return res.json({user});
+})
 
 
 /** GET /:username/to - get messages to user
@@ -36,6 +46,13 @@ router.get("/", function (req, res, next){
  *
  **/
 
+router.get("/:username/to", ensureLoggedIn, ensureCorrectUser, async function(req,res,next) {
+  const username = req.params.username;
+
+  const messagesTo = await User.messagesTo(username);
+  return res.json({messagesTo});
+})
+
 
 /** GET /:username/from - get messages from user
  *
@@ -46,5 +63,12 @@ router.get("/", function (req, res, next){
  *                 to_user: {username, first_name, last_name, phone}}, ...]}
  *
  **/
+
+ router.get("/:username/from", ensureLoggedIn, ensureCorrectUser, async function(req,res,next) {
+  const username = req.params.username;
+
+  const messagesFrom = await User.messagesFrom(username);
+  return res.json({messagesFrom});
+})
 
 module.exports = router;

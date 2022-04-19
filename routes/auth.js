@@ -25,6 +25,8 @@ router.post("/login", async function (req, res, next) {
 
 router.post("/register", async function (req, res, next) {
   const newUser = await User.register(req.body);
+  res.locals.user = newUser;
+  console.log("reslocal ",res.locals);
 
   if (newUser) {
     const token = jwt.sign({ username: newUser.username }, SECRET_KEY);
